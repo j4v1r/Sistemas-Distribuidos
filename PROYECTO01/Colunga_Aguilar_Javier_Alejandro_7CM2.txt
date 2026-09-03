@@ -1,0 +1,313 @@
+import java.util.Scanner; 
+
+public class caf{
+	public static void main(String[] args){
+		double celcius;
+		double farenheit;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa los grados en C°: ");
+		String input = teclado.nextLine();
+
+		celcius = Float.parseFloat(input);
+		farenheit = (celcius*1.8)+32.0;
+		
+		System.out.println("El equivalente en grados F° es: "+farenheit);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class mult_frac{
+	public static void main(String[] args){
+		int a,b,c,d,num,div;
+		double result;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa a: ");
+		a = teclado.nextInt();
+
+		System.out.println("Ingresa b: ");
+		b = teclado.nextInt();
+
+		System.out.println("Ingresa c: ");
+		c = teclado.nextInt();
+		
+		System.out.println("Ingresa d: ");
+		d = teclado.nextInt();
+
+		num = a*c;
+		div = b*d;
+		result = ((double)num)/((double)div);
+
+		System.out.println("El resultado de la multiplicación es: "+num+"/"+div+" ("+result+")");
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class rad_circulo{
+	public static void main(String[] args){
+		double a,b,c,semp,area,radio;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa las longitudes de los lados del tríángulo");
+		System.out.println("Ingresa a: ");
+		a = teclado.nextDouble();
+
+		System.out.println("Ingresa b: ");
+		b = teclado.nextDouble();
+
+		System.out.println("Ingresa c: ");
+		c = teclado.nextDouble();
+
+		semp = (a+b+c)/2;
+		area = Math.sqrt(semp*(semp-a)*(semp-b)*(semp-c));
+		
+		radio = area/semp;
+
+		System.out.println("El radio del círculo inscrito es: "+radio);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class asig_edificio{
+	public static void main(String[] args){
+		int edad;
+		String s,edificio;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa el sexo(H/M): ");
+		s = teclado.nextLine();
+
+		System.out.println("Ingresa la edad: ");
+		edad = teclado.nextInt();
+
+		if(s.equalsIgnoreCase(String.valueOf('H'))){
+			if(edad==18){
+				edificio="A";
+			}else if(edad>18 && edad<23){
+				edificio="C";
+			}else{
+				edificio="E1";
+			}
+		}else{
+			if(edad==18){
+				edificio="B";
+			}else if(edad>18 && edad<23){
+				edificio="D";
+			}else{
+				edificio="E2";
+			}
+		}
+
+		System.out.println("El edificio asignado es: "+edificio);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class calc_vacaciones{
+	public static void main(String[] args){
+		int ant, dias;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa el número de años de antigüedad: ");
+		ant = teclado.nextInt();
+
+		if(ant>0 && ant<6){
+			dias=5;
+		}else if(ant>5 && ant<11){
+			dias=10;
+		}else if(ant>10 && ant<20){
+			dias=ant;
+		}else{
+			dias=ant*2;
+			if(dias>45){
+				dias=45;
+			}
+		}	
+
+		System.out.println("El número de días de vacaciones correspondiente es: "+dias);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class calc_caseta{
+	public static void main(String[] args){
+		int ejes, monto;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa el número de ejes: ");
+		ejes = teclado.nextInt();
+
+		switch(ejes){
+			case 1:
+				monto=20;
+				break;
+			case 2:
+				monto=40;
+				break;
+			case 3:
+				monto=60;
+				break;
+			default:
+				monto=250;
+				if(ejes>6){
+					monto+=50*(ejes-6);
+				}
+				break;
+		}
+
+		System.out.println("El monto a cobrar es: $"+monto);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class calc_cfe{
+	public static void main(String[] args){
+		int kW,rango;
+		String tipo;
+		double monto;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa el tipo de inmueble (Hogar/Negocio): ");
+		tipo = teclado.nextLine();
+
+		System.out.println("Ingresa la cantidad de kW consumidos: ");
+		kW = teclado.nextInt();
+
+		if(tipo.equalsIgnoreCase("Hogar")){
+			if(kW<=250){
+				monto=kW*0.65;
+			}else{
+				monto=250*0.65;
+				kW-=250;
+				//+250
+				if(kW<=250){
+					monto+=kW*0.85;
+				}else{
+					kW-=250;
+					monto+=250*0.85;
+					//+500
+					if(kW<=700){
+						monto+=kW*1.5;
+					}else{
+						kW-=700;
+						monto+=700*1.5;
+						//+1200
+						if(kW<=900){
+							monto+=kW*2.5;
+						}else{
+							kW-=900;
+							monto+=900*2.5;
+							//+2100
+							monto+=kW*3;
+						}
+					}
+				}
+			}
+		}else{
+			monto=kW*5;
+		}
+
+		System.out.println("El total a pagar es: $"+monto);
+	}
+}
+*****************************************************************************************************************************
+import java.util.Scanner; 
+
+public class ordenar_if{
+	public static void main(String[] args){
+		double a,b,c;
+		Scanner teclado =  new Scanner(System.in);
+
+		System.out.println("Ingresa el primer número: ");
+		a = teclado.nextDouble();
+
+		System.out.println("Ingresa el segundo número: ");
+		b = teclado.nextDouble();
+
+		System.out.println("Ingresa el tercer número: ");
+		c = teclado.nextDouble();
+
+		System.out.println("Los números ordenados de mayor a menor son: ");
+		
+		if(a>b && a>c){
+			System.out.println(a);
+			if(b>c){
+				System.out.println(b);
+				System.out.println(c);
+			}else{
+				System.out.println(c);
+				System.out.println(b);
+			}
+		}else if(b>a && b>c){
+			System.out.println(b);
+			if(a>c){
+				System.out.println(a);
+				System.out.println(c);
+			}else{
+				System.out.println(c);
+				System.out.println(a);
+			}
+		}else{
+			System.out.println(c);
+			if(b>a){
+				System.out.println(b);
+				System.out.println(a);
+			}else{
+				System.out.println(a);
+				System.out.println(b);
+			}
+		}
+	}
+}
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
+
+*****************************************************************************************************************************
