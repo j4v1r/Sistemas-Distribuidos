@@ -3,10 +3,13 @@ import java.util.Scanner;
 public class nom_ciudades{
 	public static void main(String[] args){
 		int mayor=0, num=0;
-		String[] ciudades = {"CDMX","Monterrey","Guadalajara","New York","Houston","Madrid","Tokio","París","Roma","Bogotá"};
+		//String[] ciudades = {"CDMX","Monterrey","Guadalajara","New York","Houston","Madrid","Tokio","París","Roma","Bogotá"};
+		String[] ciudades = new String[10];
 		Scanner teclado = new Scanner(System.in);
 
 		for(int i=0;i<=9;i++){
+			System.out.println("Ingresa el nombre de la ciudad: ");
+			ciudades[i]=teclado.nextLine();
 			int aux = ciudades[i].length();
 			if(aux>num){
 				mayor = i;
