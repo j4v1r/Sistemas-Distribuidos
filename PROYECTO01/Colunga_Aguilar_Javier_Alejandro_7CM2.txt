@@ -1,3 +1,4 @@
+PROGRAMA 1
 import java.util.Scanner; 
 
 public class caf{
@@ -16,6 +17,7 @@ public class caf{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 2
 import java.util.Scanner; 
 
 public class mult_frac{
@@ -44,6 +46,7 @@ public class mult_frac{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 3
 import java.util.Scanner; 
 
 public class rad_circulo{
@@ -70,6 +73,7 @@ public class rad_circulo{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 4
 import java.util.Scanner; 
 
 public class asig_edificio{
@@ -106,6 +110,7 @@ public class asig_edificio{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 5
 import java.util.Scanner; 
 
 public class calc_vacaciones{
@@ -133,6 +138,7 @@ public class calc_vacaciones{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 6
 import java.util.Scanner; 
 
 public class calc_caseta{
@@ -165,6 +171,7 @@ public class calc_caseta{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 7
 import java.util.Scanner; 
 
 public class calc_cfe{
@@ -218,6 +225,7 @@ public class calc_cfe{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 8
 import java.util.Scanner; 
 
 public class ordenar_if{
@@ -267,47 +275,269 @@ public class ordenar_if{
 	}
 }
 *****************************************************************************************************************************
+PROGRAMA 9
+import java.util.Scanner; 
 
-*****************************************************************************************************************************
+public class capicua{
+	public static void main(String[] args){
+		int inv=0;
+		int num, res, red;
+		boolean esCap=false;
+		Scanner teclado =  new Scanner(System.in);
 
-*****************************************************************************************************************************
+		System.out.println("Ingresa un número entre 0 y 9999: ");
+		num = teclado.nextInt();
 
-*****************************************************************************************************************************
+		if(num>9999){
+			System.out.println("Ingrese un número válido.");
+		}else{
+			res = num%10;
+			inv	= (inv*10) + res;
+			
+			if(num==inv){
+				esCap=true;
+			}else{
+				red = num/10;
+				res = red%10;
+				inv	= (inv*10) + res;
+				if(num==inv){
+					esCap=true;
+				}else{
+					red = red/10;
+					res = red%10;
+					inv	= (inv*10) + res;
+					if(num==inv){
+						esCap=true;
+					}else{
+						red = red/10;
+						res = red%10;
+						inv	= (inv*10) + res;
+						if(num==inv){
+							esCap=true;
+						}else{
+							red = red/10;
+							res = red%10;
+							inv	= (inv*10) + res;
+							if(num==inv){
+								esCap=true;
+							}
+						}
+					}
+				}
+			}
 
+			if(esCap){
+				System.out.println("El número "+num+" es capicua.");
+			}else{
+				System.out.println("El número "+num+" NO es capicua.");
+			}
+		}
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 10
+import java.util.Scanner; 
 
-*****************************************************************************************************************************
+public class sum_for{
+	public static void main(String[] args){
+		int num, sum=0;
+		Scanner teclado = new Scanner(System.in);
 
-*****************************************************************************************************************************
+		System.out.println("Ingresa un número entero: ");
+		num = teclado.nextInt();
 
-*****************************************************************************************************************************
+		for(int i=1;i<=num;i++){
+			sum+=i;
+		}
 
+		System.out.println("El resultado es: "+sum);
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 11
+*****************************************************************************************************************************
+PROGRAMA 12
+*****************************************************************************************************************************
+PROGRAMA 13
+import java.util.Scanner; 
 
-*****************************************************************************************************************************
+public class beneficio{
+	public static void main(String[] args){
+		double ahorro=0;
 
-*****************************************************************************************************************************
+		for(int i=1;i<=20;i++){
+			ahorro +=10000;
+			ahorro+=ahorro*0.05;
+		}
 
+		System.out.println("El ahorro toal después de 20 años es: "+ahorro);
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 14
+import java.util.Scanner; 
 
-*****************************************************************************************************************************
+public class serie_xy{
+	public static void main(String[] args){
+		int x, y, i;
+		Scanner teclado = new Scanner(System.in);
 
-*****************************************************************************************************************************
+		System.out.println("Ingresa el número inicial (x): ");
+		x = teclado.nextInt();
 
-*****************************************************************************************************************************
+		System.out.println("Ingresa el número de incremento(y): ");
+		y = teclado.nextInt();
 
+		while(x<200){
+			x+=y;
+			if(x<=200){
+				System.out.println(x);
+			}
+		}
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 15
+import java.util.Scanner; 
+import java.util.Random;
 
-*****************************************************************************************************************************
+public class adivinar_n{
+	public static void main(String[] args){
+		int x;
+		Scanner teclado = new Scanner(System.in);
 
-*****************************************************************************************************************************
+		Random ran = new Random();
+		int n = ran.nextInt(100)+1;
 
+		do{
+			System.out.println("Ingresa el número inicial (x): ");
+			x = teclado.nextInt();
+			if(x==0){
+				System.out.println("Saliendo...");
+				break;
+			}else if(x>n){
+				System.out.println("El número ingresado es mayor");
+			}else if(x<n){
+				System.out.println("El número ingresado es menor");
+			}else{
+				System.out.println("Adivinaste el número");
+			}
+		}while(n!=x);
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 16
+import java.util.Scanner;
 
-*****************************************************************************************************************************
+public class promedio{
+	public static void main(String[] args){
+		int n=0;
+		double x,sum=0;
+		double prom;
+		Scanner teclado = new Scanner(System.in);
 
-*****************************************************************************************************************************
+		while(true){
+			System.out.println("Ingresa el número: ");
+			x = teclado.nextInt();
+			
+			if(x==0){
+				break;
+			}else{
+				sum+=x;
+				n++;
+			}
+		}
 
+		prom = sum/n;
+		System.out.println("El promedio de los números ingresados es: "+prom);
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 17
+import java.util.Scanner; 
 
+public class arr_inv{
+	public static void main(String[] args){
+		int[] arr = new int[10];
+		Scanner teclado = new Scanner(System.in);
+
+		for(int i=9;i>=0;i--){
+			System.out.println("Ingresa un número entero: ");
+			int num = teclado.nextInt();
+
+			arr[i]=num;
+		}
+
+		System.out.println("Inversión: ");
+		for(int j=0;j<=9;j++){
+			System.out.println(arr[j]);
+		}
+	}
+}
 *****************************************************************************************************************************
+PROGRAMA 18
+import java.util.Scanner; 
+
+public class nom_ciudades{
+	public static void main(String[] args){
+		int mayor=0, num=0;
+		String[] ciudades = {"CDMX","Monterrey","Guadalajara","New York","Houston","Madrid","Tokio","París","Roma","Bogotá"};
+		Scanner teclado = new Scanner(System.in);
+
+		for(int i=0;i<=9;i++){
+			int aux = ciudades[i].length();
+			if(aux>num){
+				mayor = i;
+				num = aux;
+			}
+		}
+
+		System.out.println("La ciudad con el nombre más largo es: "+ciudades[mayor]);
+	}
+}
+*****************************************************************************************************************************
+PROGRAMA 19
+*****************************************************************************************************************************
+PROGRAMA 20
+*****************************************************************************************************************************
+PROGRAMA 21
+*****************************************************************************************************************************
+PROGRAMA 22
+*****************************************************************************************************************************
+PROGRAMA 23
+import java.util.Scanner; 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
+public class arch_imp{
+	public static void main(String[] args){
+		int cont=0;
+		File arch = new File("archivo.txt");
+
+		try(Scanner leer = new Scanner(arch);
+		
+			FileWriter copia = new FileWriter("copia.txt")){
+
+		    	while(leer.hasNextLine()) {
+		      		String data = leer.nextLine();
+		      		cont++;
+			      	if(cont%2!=0){	
+			        	copia.write(data+System.lineSeparator());
+			      	}
+		     	}
+
+	    }catch(FileNotFoundException e){
+	    	System.out.println("Error.");
+	    	e.printStackTrace();
+	    }catch(IOException e){
+			System.out.println("Error al escribir.");
+			e.printStackTrace();
+		}
+
+		System.out.println("Se copiaron únicamente las líneas impares en el archivo copia.txt");
+	}
+}
+*****************************************************************************************************************************
+PROGRAMA 24
