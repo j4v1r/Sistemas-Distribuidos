@@ -355,8 +355,47 @@ public class sum_for{
 }
 *****************************************************************************************************************************
 PROGRAMA 11
+public class sum_cub_dig{
+    public static void main(String[] args){
+
+        for(int numero=1;numero<=5000;numero++){
+
+            int aux=numero;
+            int suma=0;
+
+            while(aux>0){
+                int digito=aux%10;
+                suma+=digito*digito*digito;
+                aux/=10;
+            }
+
+            if(suma==numero){
+                System.out.println(numero);
+            }
+        }
+    }
+}
 *****************************************************************************************************************************
 PROGRAMA 12
+public class nums_perf{
+    public static void main(String[] args){
+
+        for(int numero=1;numero<=10000;numero++){
+
+            int suma = 0;
+
+            for(int divisor=1;divisor<numero;divisor++){
+                if(numero%divisor==0){
+                	suma+=divisor;
+                }
+            }
+
+            if(suma==numero){
+                System.out.println(numero);
+            }
+        }
+    }
+}
 *****************************************************************************************************************************
 PROGRAMA 13
 import java.util.Scanner; 
@@ -500,8 +539,62 @@ public class nom_ciudades{
 }
 *****************************************************************************************************************************
 PROGRAMA 19
+import java.util.Scanner; 
+
+public class desc{
+	public static void main(String[] args){
+		int aux;
+		boolean esMenor=true;
+		double[] nums = new double[10];
+		Scanner teclado = new Scanner(System.in);
+
+		for(int i=0;i<10;i++){
+			System.out.println("Ingresa el número: ");
+			nums[i]=teclado.nextDouble();
+		}
+
+		for(int i=1;i<10;i++){
+			if(nums[i]>nums[i-1]){
+				esMenor=false;
+				break;
+			}
+		}
+
+		if(esMenor){
+			System.out.println("Los números están ordenados de forma descendente");
+		}else{
+			System.out.println("Los números NO están ordenados de forma descendente");
+		}
+	}
+}
 *****************************************************************************************************************************
 PROGRAMA 20
+import java.util.Scanner; 
+
+public class desp_arr{
+	public static void main(String[] args){
+		double[] nums = new double[10];
+		Scanner teclado = new Scanner(System.in);
+
+		for(int i=0;i<10;i++){
+			System.out.println("Ingresa el número: ");
+			nums[i]=teclado.nextDouble();
+		}
+
+		double aux=nums[9];
+		for(int i=0;i<=9;i++){
+			double x=nums[i];
+			nums[i]=aux;
+			aux=x;
+		}
+
+		System.out.println("Desplazamiento:");
+		for(int i=0;i<10;i++){
+			System.out.println(nums[i]);
+		}
+	}
+}
+
 *****************************************************************************************************************************
 PROGRAMA 21
 import java.util.Scanner; 
@@ -632,3 +725,37 @@ public class arch_imp{
 }
 *****************************************************************************************************************************
 PROGRAMA 24
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class cont_letras{
+    public static void main(String[] args){
+
+        int[] contador = new int[26];
+
+        try{
+            File archivo = new File("archivo.txt");
+            FileReader lector = new FileReader(archivo);
+
+            int caracter;
+
+            while((caracter=lector.read())!=-1){
+
+                char letra = Character.toLowerCase((char)caracter);
+
+                if(letra>='a'&&letra<='z'){
+                    contador[letra-'a']++;
+                }
+            }
+
+            lector.close();
+
+            for(int i=0;i<26;i++){
+                System.out.println((char)('a'+i)+": "+contador[i]);
+            }
+        }catch(IOException e){
+            System.out.println("Erro: "+e);
+        }
+    }
+}
