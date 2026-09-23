@@ -30,6 +30,8 @@ public class PoligonoIrreg {
         for (Coordenada vertice : vertices) {
             sb.append("Vertice: ")
               .append(vertice)
+              .append("---Magnitud: ")
+              .append(vertice.magnitud())
               .append("\n");
         }
 
