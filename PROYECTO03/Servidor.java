@@ -16,9 +16,12 @@ import java.util.concurrent.Executors;
 public class Servidor {
     
     private static final String STATUS_ENDPOINT = "/status";
+    private static final String CREAR_ASTEROIDE_ENDPOINT = "/crear_asteroide";
 
     private final int port;
     private HttpServer server;
+
+    private int num_ast=0;
 
     public static void main(String[] args) {
         int serverPort = 8080;
@@ -45,8 +48,10 @@ public class Servidor {
         }
 
         HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
+        HttpContext crearAsteroideContext = server.createContext(CREAR_ASTEROIDE_ENDPOINT);
 
         statusContext.setHandler(this::handleStatusCheckRequest);
+        crearAsteroideContext.setHandler(this::handleCrearAsteroideRequest);
 
         server.setExecutor(Executors.newFixedThreadPool(8));
         server.start();
@@ -58,8 +63,56 @@ public class Servidor {
             return;
         }
 
-        String responseMessage = "El servidor está vivo\n";
+        String responseMessage = "TOTAL DE ASTEROIDES CREADOS: "+num_ast;
         sendResponse(responseMessage.getBytes(), exchange);
+    }
+
+    private void handleCrearAsteroideRequest(HttpExchange exchange) throws IOException {
+        if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
+            exchange.sendResponseHeaders(405,-1);
+            exchange.close();
+            return;
+        }
+
+        Headers headers = exchange.getRequestHeaders();
+        if (headers.containsKey("X-Test") && headers.get("X-Test").get(0).equalsIgnoreCase("true")) {
+            String dummyResponse = "123\n";
+            sendResponse(dummyResponse.getBytes(), exchange);
+            return;
+        }
+
+        boolean isDebugMode = false;
+        if (headers.containsKey("X-Debug") && headers.get("X-Debug").get(0).equalsIgnoreCase("true")) {
+            isDebugMode = true;
+        }
+
+        long startTime = System.nanoTime();
+
+        byte[] requestBytes = exchange.getRequestBody().readAllBytes();
+        byte[] responseBytes = calculateResponse(requestBytes);
+
+        long finishTime = System.nanoTime();
+
+        if (isDebugMode) {
+            String debugMessage = String.format("La operación tomó %d nanosegundos", finishTime - startTime);
+            exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
+        }
+
+        sendResponse(responseBytes, exchange);
+    }
+
+    private byte[] calculateResponse(byte[] requestBytes) {
+        String bodyString = new String(requestBytes);
+        String[] datosAsteroide = bodyString.split(",");
+
+        int num_crear = Integer.parseInt(datosAsteroide[3]);
+        num_ast+=num_crear;
+
+        /*for(String d : datosAsteroide){
+            System.out.println(d);
+        }*/
+
+        return String.format("Los asteroides fueron creados.\n").getBytes();
     }
 
     private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
