@@ -34,6 +34,8 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
+import java.util.Random;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
@@ -41,6 +43,7 @@ import java.io.File;
 public class WebServer {
     private static final String TASK_ENDPOINT = "/task";
     private static final String STATUS_ENDPOINT = "/status";
+    private static final String SEARCH_TOKEN_ENDPOINT = "/searchtoken";
     private static final String IPN_ENDPOINT = "/ipn";
 
     private final int port;
@@ -72,10 +75,12 @@ public class WebServer {
 
         HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
         HttpContext taskContext = server.createContext(TASK_ENDPOINT);
+        HttpContext searchContext = server.createContext(SEARCH_TOKEN_ENDPOINT);
         HttpContext ipnContext = server.createContext(IPN_ENDPOINT);
 
         statusContext.setHandler(this::handleStatusCheckRequest);
         taskContext.setHandler(this::handleTaskRequest);
+        searchContext.setHandler(this::handleSearchTokenRequest);
         ipnContext.setHandler(this::handleIPNRequest);
 
         server.setExecutor(Executors.newFixedThreadPool(8));
@@ -140,6 +145,80 @@ public class WebServer {
         sendResponse(responseMessage.getBytes(), exchange);
     }
 
+    private void handleSearchTokenRequest(HttpExchange exchange) throws IOException {
+        if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
+            exchange.close();
+            return;
+        }
+
+        Headers headers = exchange.getRequestHeaders();
+        boolean isDebugMode = false;
+        if (headers.containsKey("X-Debug") && headers.get("X-Debug").get(0).equalsIgnoreCase("true")) {
+            isDebugMode = true;
+        }
+
+        long startTime = System.nanoTime();
+
+        byte[] requestBytes = exchange.getRequestBody().readAllBytes();
+        String bodyString = new String(requestBytes);
+        String[] parts = bodyString.split(",");
+        
+        int n = Integer.parseInt(parts[0].trim());
+        String target = parts[1].trim();
+
+        int contador = 0;
+        char[] cadenota = new char[n * 4];
+        Random rand = new Random();
+
+        // Generar la cadenota
+        for (int i = 0; i < n * 4; i++) {
+            if ((i + 1) % 4 == 0) {
+                cadenota[i] = ' ';
+            } else {
+                int random_char = rand.nextInt(26) + 65;
+                cadenota[i] = (char) random_char;
+            }
+        }
+
+        // Extraer los 3 caracteres a buscar
+        char t1 = target.charAt(0);
+        char t2 = target.charAt(1);
+        char t3 = target.charAt(2);
+
+        // Buscar las coincidencias
+        for (int i = 0; i < n * 4; i += 4) {
+            if (cadenota[i] == t1 && cadenota[i + 1] == t2 && cadenota[i + 2] == t3) {
+                contador++;
+            }
+        }
+
+        // Solo devolver el número de coincidencias
+        String respuesta = String.format("La subcadena se repitió %d veces.\n", contador);
+        byte[] responseBytes = respuesta.getBytes();
+        
+        long finishTime = System.nanoTime();
+
+        if (isDebugMode) {
+            long totalNanos = finishTime - startTime;
+            
+            // --- CÁLCULO DE SEGUNDOS Y MILISEGUNDOS ---
+            long segundos = totalNanos / 1_000_000_000L;
+            // Obtenemos el sobrante en nanos y lo convertimos a milisegundos
+            long milisegundos = (totalNanos % 1_000_000_000L) / 1_000_000L; 
+            
+            // Construcción del mensaje con el nuevo formato
+            String debugMessage = String.format(
+                "La operacion tomo %d nanosegundos = %d segundos con %d milisegundos.",
+                totalNanos, segundos, milisegundos
+            );
+
+            
+            exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
+        }
+
+        sendResponse(responseBytes, exchange);
+    }
+
     private void handleIPNRequest(HttpExchange exchange) throws IOException {
         if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
             exchange.close();
@@ -178,8 +257,7 @@ public class WebServer {
             e.printStackTrace();
             exchange.sendResponseHeaders(500, -1);
             exchange.close();
-        }   
-        
+        }      
     }
 
     private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
