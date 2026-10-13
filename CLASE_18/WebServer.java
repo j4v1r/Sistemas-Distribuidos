@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 public class WebServer {
     private static final String TASK_ENDPOINT = "/task";
     private static final String STATUS_ENDPOINT = "/status";
+    private static final String IPN_ENDPOINT = "/ipn";
 
     private final int port;
     private HttpServer server;
@@ -67,9 +68,11 @@ public class WebServer {
 
         HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
         HttpContext taskContext = server.createContext(TASK_ENDPOINT);
+        HttpContext ipnContext = server.createContext(IPN_ENDPOINT);
 
         statusContext.setHandler(this::handleStatusCheckRequest);
         taskContext.setHandler(this::handleTaskRequest);
+        ipnContext.setHandler(this::handleIPNRequest);
 
         server.setExecutor(Executors.newFixedThreadPool(8));
         server.start();
@@ -131,6 +134,16 @@ public class WebServer {
 
         String responseMessage = "El servidor está vivo\n";
         sendResponse(responseMessage.getBytes(), exchange);
+    }
+
+    private void handleIPNRequest(HttpExchange exchange) throws IOException {
+        if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
+            exchange.close();
+            return;
+        }
+
+        String ipn_ascii = ../resources/
+        
     }
 
     private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {

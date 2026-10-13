@@ -17,10 +17,14 @@ public class HttpClientSynchronous {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        //String nums_mult = "58,458912";
+
         HttpRequest request = HttpRequest.newBuilder()
+                //.POST(HttpRequest.BodyPublishers.ofString(nums_mult))
                 .GET()
-                .uri(URI.create("https://httpbin.org/get"))
+                .uri(URI.create("http://localhost:8080/ipn"))
                 .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                //.setHeader("X-Debug", "true")
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
