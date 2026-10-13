@@ -141,7 +141,7 @@ public class WebServer {
             return;
         }
 
-        String responseMessage = "El servidor está vivo\n";
+        String responseMessage = String.format("El servidor está vivo en el puerto " + port + "\n");
         sendResponse(responseMessage.getBytes(), exchange);
     }
 
