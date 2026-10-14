@@ -13,7 +13,9 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
-public class Servidor {
+import javax.swing.*;
+
+public class Servidor extends JFrame {
     
     private static final String STATUS_ENDPOINT = "/status";
     private static final String CREAR_ASTEROIDE_ENDPOINT = "/crear_asteroide";
@@ -33,6 +35,19 @@ public class Servidor {
         webServer.startServer();
 
         System.out.println("Servidor escuchando en el puerto " + serverPort);
+
+        // 2. Nueva lógica gráfica: Crear la ventana y agregar el PanelAsteroides
+        JFrame ventana = new JFrame("Servidor - Simulador de Asteroides");
+        ventana.setSize(1000, 1000);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Si cierras la ventana, se apaga el servidor
+        ventana.setLocationRelativeTo(null); // Centrar en la pantalla
+        
+        // Instancias y agregas tu panel negro a la ventana
+        PanelAsteroides panel = new PanelAsteroides();
+        ventana.add(panel);
+        
+        // Haces visible la ventana
+        ventana.setVisible(true);
     }
 
     public Servidor(int port) {

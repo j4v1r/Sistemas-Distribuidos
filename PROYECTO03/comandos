@@ -1,0 +1,4 @@
+javac Servidor.java
+
+javac -cp "lanterna-3.1.5.jar" Cliente.java
+java -cp "lanterna-3.1.5.jar:." Cliente
