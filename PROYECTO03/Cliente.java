@@ -49,13 +49,13 @@ public class Cliente {
             screen.refresh();
             String dato1 = leerDato(screen, 40, 4);
 
-            tg.putString(2, 5, "Ingrese una coordenada (vector de dirección): ");
+            tg.putString(2, 5, "Ingrese una coordenada X,Y (vector de dirección): ");
             screen.refresh();
-            String dato2 = leerDato(screen, 48, 5);
+            String dato2 = leerDato(screen, 52, 5);
 
-            tg.putString(2, 6, "Ingrese la velocidad angular del asteroide y sentido de rotación: ");
+            tg.putString(2, 6, "Ingrese la velocidad angular del asteroide y sentido de rotación (+/-): ");
             screen.refresh();
-            String dato3 = leerDato(screen, 68, 6);
+            String dato3 = leerDato(screen, 74, 6);
 
             tg.putString(2, 7, "Ingrese el número de asteroides a crear: ");
             screen.refresh();

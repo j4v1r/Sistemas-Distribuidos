@@ -25,33 +25,34 @@ public class Servidor extends JFrame {
 
     private int num_ast=0;
 
+    private PanelAsteroides panel;
+
     public static void main(String[] args) {
         int serverPort = 8080;
         if (args.length == 1) {
             serverPort = Integer.parseInt(args[0]);
         }
 
-        Servidor webServer = new Servidor(serverPort);
-        webServer.startServer();
-
-        System.out.println("Servidor escuchando en el puerto " + serverPort);
-
-        // 2. Nueva lógica gráfica: Crear la ventana y agregar el PanelAsteroides
+        //Crear la ventana
         JFrame ventana = new JFrame("Servidor - Simulador de Asteroides");
         ventana.setSize(1000, 1000);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Si cierras la ventana, se apaga el servidor
         ventana.setLocationRelativeTo(null); // Centrar en la pantalla
         
-        // Instancias y agregas tu panel negro a la ventana
+        //Instanciar panel y agregar a la ventana
         PanelAsteroides panel = new PanelAsteroides();
         ventana.add(panel);
-        
-        // Haces visible la ventana
         ventana.setVisible(true);
+
+        Servidor webServer = new Servidor(serverPort, panel);
+        webServer.startServer();
+
+        System.out.println("Servidor escuchando en el puerto " + serverPort);
     }
 
-    public Servidor(int port) {
+    public Servidor(int port, PanelAsteroides panel) {
         this.port = port;
+        this.panel = panel;
     }
 
     public void startServer() {
@@ -120,12 +121,17 @@ public class Servidor extends JFrame {
         String bodyString = new String(requestBytes);
         String[] datosAsteroide = bodyString.split(",");
 
-        int num_crear = Integer.parseInt(datosAsteroide[3]);
-        num_ast+=num_crear;
+        double velocidad = Double.parseDouble(datosAsteroide[0]);
+        double dx = Double.parseDouble(datosAsteroide[1]);
+        double dy = Double.parseDouble(datosAsteroide[2]);
+        double velAngular = Double.parseDouble(datosAsteroide[3]);
+        int cant = Integer.parseInt(datosAsteroide[4]);
 
-        /*for(String d : datosAsteroide){
-            System.out.println(d);
-        }*/
+        num_ast+=cant;
+
+        for(int i=0;i<cant;i++){
+            panel.agregarAsteroideDesdeServidor(velocidad, dx, dy, velAngular);
+        }
 
         return String.format("Los asteroides fueron creados.\n").getBytes();
     }
