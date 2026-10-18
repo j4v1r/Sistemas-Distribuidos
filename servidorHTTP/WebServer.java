@@ -40,6 +40,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
 
+import java.security.MessageDigest;
+
 public class WebServer {
     private static final String TASK_ENDPOINT = "/task";
     private static final String STATUS_ENDPOINT = "/status";
@@ -109,12 +111,31 @@ public class WebServer {
         long startTime = System.nanoTime();
 
         byte[] requestBytes = exchange.getRequestBody().readAllBytes();
-        byte[] responseBytes = calculateResponse(requestBytes);
+        byte[] responseBytes = null;
+        
+        try{
+            responseBytes = obtenerPassword(requestBytes);
+        }catch(Exception e){
+            System.out.println("ERROR ERROR ERROR");
+        }
 
         long finishTime = System.nanoTime();
 
         if (isDebugMode) {
-            String debugMessage = String.format("La operación tomó %d nanosegundos", finishTime - startTime);
+            long totalNanos = finishTime - startTime;
+            
+            // --- CÁLCULO DE SEGUNDOS Y MILISEGUNDOS ---
+            long segundos = totalNanos / 1_000_000_000L;
+            // Obtenemos el sobrante en nanos y lo convertimos a milisegundos
+            long milisegundos = (totalNanos % 1_000_000_000L) / 1_000_000L; 
+            
+            // Construcción del mensaje con el nuevo formato
+            String debugMessage = String.format(
+                "La operacion tomo %d nanosegundos = %d segundos con %d milisegundos.",
+                totalNanos, segundos, milisegundos
+            );
+
+            
             exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
         }
 
@@ -133,6 +154,54 @@ public class WebServer {
         }
 
         return String.format("El resultado de la multiplicación es %s\n", result).getBytes();
+    }
+
+    private byte[] obtenerPassword(byte[] requestBytes) throws Exception{
+        String bodyString = new String(requestBytes);
+        String[] stringNumbers = bodyString.split(",");
+
+        String hashObjetivo = stringNumbers[0];
+        char inicio = stringNumbers[1].charAt(0);
+
+        System.out.println("Hash objetivo: " + hashObjetivo);
+        System.out.println("Letra inicial: "+inicio);
+        System.out.println("Buscando contraseña...\n");
+
+        for(char a=inicio; a<='z'; a++){
+            for(char b='a'; b<='z'; b++){
+                for(char c='a'; c<='z'; c++){
+                    for(char d='a'; d<='z'; d++){
+                        for(char e='a'; e<='z'; e++){
+
+                            String intento = "" + a + b + c + d + e;
+
+                            String hash = sha256(intento);
+
+                            if(hash.equals(hashObjetivo)){
+                                return String.format("La contraseña es: "+intento+"\n").getBytes();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return String.format("NULL").getBytes();
+    }
+
+    public static String sha256(String texto) throws Exception {
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+        byte[] hash = md.digest(texto.getBytes());
+
+        StringBuilder hex = new StringBuilder();
+
+        for(byte b : hash){
+            hex.append(String.format("%02x", b));
+        }
+
+        return hex.toString();
     }
 
     private void handleStatusCheckRequest(HttpExchange exchange) throws IOException {
