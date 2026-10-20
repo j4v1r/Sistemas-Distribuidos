@@ -167,7 +167,8 @@ public class WebServer {
         System.out.println("Letra inicial: "+inicio);
         System.out.println("Buscando contraseña...\n");
 
-        for(char a=inicio; a<='z'; a++){
+        char a = inicio;
+
             for(char b='a'; b<='z'; b++){
                 for(char c='a'; c<='z'; c++){
                     for(char d='a'; d<='z'; d++){
@@ -184,7 +185,6 @@ public class WebServer {
                     }
                 }
             }
-        }
 
         return String.format("NULL").getBytes();
     }
