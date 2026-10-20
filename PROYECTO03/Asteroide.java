@@ -28,7 +28,7 @@ public class Asteroide {
             this.dx = dx / magnitud;
             this.dy = dy / magnitud;
         } else {
-            this.dx = 1; // Vector de rescate si el usuario ingresa 0,0
+            this.dx = 1;
             this.dy = 0;
         }
         
@@ -55,10 +55,10 @@ public class Asteroide {
         // Movimiento lineal y rotación
         x += velocidad * dx;
         y += velocidad * dy;
-        
+
         rotacionActual += velocidadAngular;
 
-        // Regla: Wrap-around (Si sale de la pantalla, reaparece en el lado opuesto)
+        // Reaparición en el lado opuesto
         if (x < -radioMaximo) x = anchoPantalla + radioMaximo;
         else if (x > anchoPantalla + radioMaximo) x = -radioMaximo;
 

@@ -62,7 +62,11 @@ public class PanelAsteroides extends JPanel {
                 break;
         }
 
-        Asteroide nuevo = new Asteroide(startX, startY, velocidad, dx, dy, velAngular);
+        // Modificador aleatorio entre -0.5 y 0.5
+        double variacionX = random.nextDouble() - 0.5;
+        double variacionY = random.nextDouble() - 0.5;
+
+        Asteroide nuevo = new Asteroide(startX, startY, velocidad, dx+variacionX, dy+variacionY, velAngular);
         asteroides.add(nuevo);
     }
 
