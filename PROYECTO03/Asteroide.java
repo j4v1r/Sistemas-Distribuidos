@@ -12,16 +12,19 @@ public class Asteroide {
     private double dx, dy;
     private double velocidadAngular;
     private double rotacionActual;
-    
-    private Polygon forma;
-    private int radioMaximo = 40;
+    private double escala;
+    private int radioMaximo;
 
-    public Asteroide(double x, double y, double velocidad, double dx, double dy, double velocidadAngular) {
+    private Polygon forma;
+
+    public Asteroide(double x, double y, double velocidad, double dx, double dy, double velocidadAngular, double escala) {
         this.x = x;
         this.y = y;
         this.velocidad = velocidad;
         this.velocidadAngular = velocidadAngular;
         this.rotacionActual = 0;
+        this.escala = escala;
+        this.radioMaximo = (int)(40*escala);
 
         double magnitud = Math.hypot(dx, dy);
         if (magnitud != 0) {
@@ -43,7 +46,7 @@ public class Asteroide {
         
         for (int i = 0; i < numVertices; i++) {
             double angulo = 2 * Math.PI * i / numVertices;
-            double radio = 15 + r.nextDouble() * 25; // Radio variable para crear cráteres y picos
+            double radio = (15 + r.nextDouble() * 25)*escala; // Radio variable para crear cráteres y picos
             
             int px = (int) (Math.cos(angulo) * radio);
             int py = (int) (Math.sin(angulo) * radio);
