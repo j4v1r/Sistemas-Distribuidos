@@ -26,8 +26,6 @@
  *  SOFTWARE.
  */
 
-import networking.WebClient;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,18 +33,21 @@ import java.util.concurrent.CompletableFuture;
 public class Aggregator {
     private WebClient webClient;
 
+    // Record local o externo para manejar las parejas
+    public record ResultadoLibro(String nombreLibro, double puntaje) {}
+
     public Aggregator() {
         this.webClient = new WebClient();
     }
 
-    public List<String> sendTasksToWorkers(List<String> workersAddresses, List<String> tasks) {
+    public List<ResultadoLibro> sendTasksToWorkers(List<String> workersAddresses, List<String> tasks) {
         int numWorkers = workersAddresses.size();
         int totalTasks = tasks.size();
 
         CompletableFuture<String>[] futures = new CompletableFuture[numWorkers];
         String[] currentTasks = new String[numWorkers];
-        String[] taskResults = new String[totalTasks];
-
+        
+        ResultadoLibro[] taskResults = new ResultadoLibro[totalTasks];
         int nextTaskIndex = 0;
 
         // 1. Asignación inicial de tareas a los servidores disponibles
@@ -73,7 +74,10 @@ public class Aggregator {
                     // Guardar el resultado en la posición original de la tarea
                     int taskIndex = tasks.indexOf(completedTask);
                     if (taskIndex != -1) {
-                        taskResults[taskIndex] = result;
+                        String[] partes = result.split(";;;");
+                        if (partes.length == 2) {
+                            taskResults[taskIndex] = new ResultadoLibro(partes[0].trim(), Double.parseDouble(partes[1].trim()));
+                        }
                     }
 
                     completedTasks++;
@@ -105,13 +109,13 @@ public class Aggregator {
         }
 
         // 3. Imprimir el resumen con las apariciones respetando el orden original
-        /*List<String> resultsList = new ArrayList<>();
+        List<ResultadoLibro> resultsList = new ArrayList<>();
         for (int i = 0; i < totalTasks; i++) {
             if (taskResults[i] != null) {
                 System.out.println("Para la tarea " + tasks.get(i) + " " + taskResults[i]);
                 resultsList.add(taskResults[i]);
             }
-        }*/
+        }
 
         return resultsList;
     }

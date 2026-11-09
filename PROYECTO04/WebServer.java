@@ -40,6 +40,12 @@ import java.util.concurrent.Executors;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Comparator;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebServer {
     private static final String TASK_ENDPOINT = "/task";
@@ -185,15 +191,61 @@ public class WebServer {
     }
 
     private byte[] calcularPuntaje(byte[] requestBytes) {
-        String bodyString = new String(requestBytes);
-        String[] argumentos = bodyString.split(",");
+        String bodyString = new String(requestBytes, java.nio.charset.StandardCharsets.UTF_8).trim();
+        String[] argumentos = bodyString.split(";;;");
         
-        String oracion = argumentos[1];
-        String[] palabras = oracion.split("\\s+");
+        String nombreArchivo = argumentos[0].trim();
+        String oracion = argumentos[1].trim();
+        String idfData = argumentos.length > 2 ? argumentos[2].trim() : "";
 
-        Map<String, Integer> conteoPalabras = new HashMap<>();
+        // Reconstruir el mapa de valores IDF
+        Map<String, Double> idfMap = new HashMap<>();
+        if (!idfData.isEmpty()) {
+            String[] paresIdf = idfData.split("\\|");
+            for (String par : paresIdf) {
+                if (par.isEmpty()) continue;
+                String[] claveValor = par.split(":");
+                if (claveValor.length == 2) {
+                    idfMap.put(claveValor[0], Double.parseDouble(claveValor[1]));
+                }
+            }
+        }
 
-        return String.format("La calificación del libro es %s\n", result).getBytes();
+        String[] palabrasOracion = oracion.toLowerCase().split("\\s+");
+        double puntajeTotal = 0.0;
+
+        // Leer el libro asignado y calcular el TF-IDF
+        try {
+            File archivo = new File("./LIBROS_TXT/" + nombreArchivo);
+            String contenido = leerArchivoSeguro(archivo);
+            String[] palabrasArchivo = contenido.toLowerCase().split("\\s+");
+            int totalPalabrasLibro = palabrasArchivo.length;
+
+            for (String palabraBuscada : palabrasOracion) {
+                String palabraBuscadaLimpia = palabraBuscada.replaceAll("[^a-záéíóúñ0-9]", "");
+                int apariciones = 0;
+
+                // Contar el Term Frequency (TF)
+                for (String pLibro : palabrasArchivo) {
+                    String pLimpia = pLibro.replaceAll("[^a-záéíóúñ0-9]", "");
+                    if (pLimpia.equals(palabraBuscadaLimpia)) {
+                        apariciones++;
+                    }
+                }
+
+                // Calcular TF y multiplicarlo por el IDF proporcionado
+                double tf = (double) apariciones / totalPalabrasLibro;
+                double idf = idfMap.getOrDefault(palabraBuscadaLimpia, 0.0);
+                
+                puntajeTotal += (tf * idf);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error en el Worker leyendo el archivo: " + nombreArchivo);
+        }
+
+        // 4. Retornar el formato requerido por el Aggregator: "nombreLibro.txt,1.45"
+        return (nombreArchivo + ";;;" + puntajeTotal).getBytes(java.nio.charset.StandardCharsets.UTF_8);
     }
 
     private void handleDispatcherRequest(HttpExchange exchange) throws IOException {
@@ -209,9 +261,15 @@ public class WebServer {
 
         // 1. Leer los datos enviados por la página web (ej. "frase_a_buscar")
         byte[] requestBytes = exchange.getRequestBody().readAllBytes();
-        String bodyString = new String(requestBytes, java.nio.charset.StandardCharsets.UTF-8);
-        String hashObjetivo = bodyString.trim(); // Extraer la oración a buscar
-        String[] palabras = oracion.split("\\s+"); // Arreglo con las palabras de la oración para calcular el IDF
+        String oracion = new String(requestBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+        // Revisar si la oración está vacía
+        if (oracion.isEmpty()) {
+            sendResponse("La frase está vacía.\n".getBytes(), exchange);
+            return;
+        }
+
+        String[] palabras = oracion.toLowerCase().split("\\s+"); // Arreglo con las palabras de la oración para calcular el IDF
 
         // 2. Calcular el IDF para todos los libros en la carpeta 'LIBROS_TXT'
         File carpetaTextos = new File("./LIBROS_TXT");
@@ -222,13 +280,14 @@ public class WebServer {
         int totalLibros = 0;
 
         // Map para guardar cuántos libros contienen la palabra
-        Map<String, Integer> mapContador = new HashMap<>(); 
+        Map<String, Integer> mapContador = new HashMap<>();
+
         // Inicializar el Map en 0
         for(String p : palabras) { 
             mapContador.put(p, 0); 
         }
 
-        // Obtener el número de libros que contienen cada palabra de la oración
+        // 2.1 Obtener el número de libros que contienen cada palabra de la oración
         if (archivos != null) {
             for (File archivo : archivos) {
                 if (archivo.isFile()) {
@@ -245,6 +304,7 @@ public class WebServer {
         // Constructor de Strings para el formato de String con el IDF de cada palabra al ENDPOINT 
         StringBuilder idfDataBuilder = new StringBuilder();
 
+        // 2.2 Cálculo del IDF de cada palabra
         for (String palabra : palabras) {
             int librosQueLaContienen = mapContador.get(palabra);
             double idf = 0.0;
@@ -261,36 +321,41 @@ public class WebServer {
         // Conversión a String para enviar el IDF al ENDPOINT
         String idfData = idfDataBuilder.toString();
 
-        // Adjuntar las tareas para el calculo de los textos en la carpeta 'LIBROS_TXT'
+        // 3. Adjuntar las tareas para el calculo del puntaje de los textos en la carpeta 'LIBROS_TXT'
         if (archivos != null) {
             for (File archivo : archivos) {
                 if (archivo.isFile()) {
                     // Ejemplo: "don_quijote.txt,la frase de búsqueda,palabra1:1.5|palabra2:0.9|"
-                    listaTareas.add(archivo.getName() + "," + fraseDeBusqueda + "," + idfData);
+                    listaTareas.add(archivo.getName() + ";;;" + oracion + ";;;" + idfData);
                 }
             }
         }
 
-        // 3. Enviar a los Workers usando Aggregator.java
+        // 4. Enviar a los Workers usando Aggregator.java
         Aggregator aggregator = new Aggregator();
         List<String> workers = List.of("http://localhost:8081/minetext", "http://localhost:8082/minetext", "http://localhost:8083/minetext");
         
         System.out.println("Iniciando despacho de tareas a los workers...");
-        List<String> resultados = aggregator.sendTasksToWorkers(workers, listaTareas);
+        List<Aggregator.ResultadoLibro> resultadosFinales = aggregator.sendTasksToWorkers(workers, listaTareas);
 
-        // 4. Filtrar el resultado exitoso
-        String respuestaFinal = "Contraseña no encontrada\n";
-        for (String res : resultados) {
-            if (res != null && !res.equals("NULL")) {
-                respuestaFinal = res; // Guardamos "La contraseña es: escom"
-                break;
-            }
+        // Ordenar matemáticamente de Mayor a Menor puntaje
+        resultadosFinales.sort((r1, r2) -> Double.compare(r2.puntaje(), r1.puntaje()));
+
+        // 7. Formatear la cadena de respuesta que recibirá el usuario
+        StringBuilder respuestaFinal = new StringBuilder();
+        respuestaFinal.append("Resultados ordenados por relevancia:\n\n");
+        
+        for (Aggregator.ResultadoLibro res : resultadosFinales) {
+            respuestaFinal.append(res.nombreLibro())
+                          .append(" -> Puntaje TF-IDF: ")
+                          .append(String.format("%.6f", res.puntaje()))
+                          .append("\n");
         }
 
-        byte[] responseBytes = respuestaFinal.getBytes();
+        byte[] responseBytes = respuestaFinal.toString().getBytes();
         long finishTime = System.nanoTime();
 
-        // 5. Header de depuración de tiempo
+        // 7. Header de depuración de tiempo
         if (isDebugMode) {
             long totalNanos = finishTime - startTime;
             long segundos = totalNanos / 1_000_000_000L;
@@ -307,7 +372,7 @@ public class WebServer {
         boolean existe = false;
 
         try {
-            String contenido = Files.readString(archivo.toPath());
+            String contenido = leerArchivoSeguro(archivo);
             String[] palabrasArchivo = contenido.toLowerCase().split("\\s+");
             String palabraBuscada = palabra.toLowerCase().trim();
 
@@ -324,6 +389,16 @@ public class WebServer {
         }
 
         return existe;
+    }
+
+    private String leerArchivoSeguro(File archivo) throws IOException {
+        try {
+            // Intentar leer el texto con el estándar moderno (UTF-8)
+            return Files.readString(archivo.toPath(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (java.nio.charset.MalformedInputException e) {
+            // Si el archivo tiene acentos en formato antiguo, usar ISO-8859-1
+            return Files.readString(archivo.toPath(), java.nio.charset.StandardCharsets.ISO_8859_1);
+        }
     }
 
     private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
