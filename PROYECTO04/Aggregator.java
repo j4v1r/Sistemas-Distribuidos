@@ -56,7 +56,11 @@ public class Aggregator {
             String task = tasks.get(nextTaskIndex);
 
             currentTasks[i] = task;
-            //System.out.println("Al servidor " + worker + " se le asigna la tarea: " + task);
+            
+            // Extraer el nombre del libro (está antes del primer ';;;')
+            String nombreLibro = task.split(";;;")[0];
+            //System.out.println("Al servidor " + worker + " se le asigna el libro: " + nombreLibro);
+
             futures[i] = webClient.sendTask(worker, task.getBytes());
 
             nextTaskIndex++;
@@ -93,7 +97,10 @@ public class Aggregator {
                         String newTask = tasks.get(nextTaskIndex);
                         currentTasks[i] = newTask;
 
-                        System.out.println("Al servidor " + worker + " se le asigna la tarea: " + newTask);
+                        // Extraer el nombre del libro de la nueva tarea
+                        String nombreLibroNuevo = newTask.split(";;;")[0];
+                        //System.out.println("Al servidor " + worker + " se le asigna el libro: " + nombreLibroNuevo);
+                        
                         futures[i] = webClient.sendTask(worker, newTask.getBytes());
 
                         nextTaskIndex++;
@@ -112,7 +119,7 @@ public class Aggregator {
         List<ResultadoLibro> resultsList = new ArrayList<>();
         for (int i = 0; i < totalTasks; i++) {
             if (taskResults[i] != null) {
-                System.out.println("Para la tarea " + tasks.get(i) + " " + taskResults[i]);
+                System.out.println("\nPara la tarea " + tasks.get(i) + " " + taskResults[i]);
                 resultsList.add(taskResults[i]);
             }
         }

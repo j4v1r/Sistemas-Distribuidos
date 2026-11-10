@@ -195,6 +195,8 @@ public class WebServer {
         String[] argumentos = bodyString.split(";;;");
         
         String nombreArchivo = argumentos[0].trim();
+        System.out.println("--> Procesando tarea para el libro: " + nombreArchivo);
+        
         String oracion = argumentos[1].trim();
         String idfData = argumentos.length > 2 ? argumentos[2].trim() : "";
 
@@ -334,6 +336,7 @@ public class WebServer {
         // 4. Enviar a los Workers usando Aggregator.java
         Aggregator aggregator = new Aggregator();
         List<String> workers = List.of("http://localhost:8081/minetext", "http://localhost:8082/minetext", "http://localhost:8083/minetext");
+        //List<String> workers = List.of("http://10.128.0.15:8080/minetext", "http://10.128.0.16:8080/minetext", "http://10.128.0.17:8080/minetext");
         
         System.out.println("Iniciando despacho de tareas a los workers...");
         List<Aggregator.ResultadoLibro> resultadosFinales = aggregator.sendTasksToWorkers(workers, listaTareas);
